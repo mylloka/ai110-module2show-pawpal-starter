@@ -6,6 +6,11 @@
 
 - Briefly describe your initial UML design.
 - What classes did you include, and what responsibilities did you assign to each?
+My initial UML design consists of the classes: Owner, Pet, task and scheduler. 
+The owner class will store the pet owners information and his available time. 
+The Pet class will store the pets information, that includes name, age and species.
+The Task class consists of each task activity that the owner would like to implement in daily plan, such as walks, taking to the vet, etc.
+Scheduler Class combines the owners schedula and what tasks needs to be done for a daile schedule. 
 
 **b. Design changes**
 
