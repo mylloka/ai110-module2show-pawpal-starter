@@ -28,8 +28,8 @@ Scheduler Class combines the owners schedula and what tasks needs to be done for
 
 **b. Tradeoffs**
 
-- Describe one tradeoff your scheduler makes.
-- Why is that tradeoff reasonable for this scenario?
+- The original code manually found the next recurrence day using multiple steps, while the new version simplifies it by using min() and % 7 or 7 to handle everything more cleanly. When a user adds a pet, the UI calls a class method like add_pet() to create and store the object, and Streamlit reruns the app to automatically display the updated list. I changed the net_occurence at paypal_system
+
 
 ---
 
@@ -38,7 +38,9 @@ Scheduler Class combines the owners schedula and what tasks needs to be done for
 **a. How you used AI**
 
 - How did you use AI tools during this project (for example: design brainstorming, debugging, refactoring)?
+I was able to use AI to help me implement functions and debug and brainstorm.
 - What kinds of prompts or questions were most helpful?
+Prompts
 
 **b. Judgment and verification**
 

@@ -22,6 +22,22 @@ Your final app should:
 - Display the plan clearly (and ideally explain the reasoning)
 - Include tests for the most important scheduling behaviors
 
+## Smarter Scheduling
+
+The scheduler goes beyond a simple task list — it applies real logic to build a conflict-free, priority-ordered daily plan.
+
+**Priority-based selection**
+Tasks are ranked High → Medium → Low using a numeric lookup (`_PRIORITY_ORDER`) before being added to the schedule. Higher-priority tasks always get their time slot first; lower-priority tasks are only added if no conflict exists.
+
+**Interval conflict detection**
+Two tasks conflict when their time windows overlap — not just when they share an exact start time. The check uses: `a_start < b_end AND a_end > b_start`. `build_schedule()` silently blocks conflicting tasks; `get_conflicts()` returns warning pairs so the UI can alert the user without crashing.
+
+**Recurring tasks**
+Tasks can repeat `Daily` or `Weekly`. When `mark_task_complete()` is called on a recurring task, it automatically calculates the next occurrence using `timedelta` arithmetic and registers it on the pet — no manual re-entry needed. Weekly recurrence supports multiple days and uses modular weekday math to always find the nearest future occurrence.
+
+**Chronological output**
+`sort_by_time()` uses Python's `sorted()` with a `lambda` key on `time_slot` to return the final plan in clock order, regardless of the priority order used internally during scheduling.
+
 ## Getting started
 
 ### Setup
