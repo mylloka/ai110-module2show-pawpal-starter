@@ -1,5 +1,12 @@
 # PawPal+ Project Reflection
 
+<img width="909" height="974" alt="Pawpal1" src="https://github.com/user-attachments/assets/2378df93-9629-442d-bb08-7b566271629d" />
+<img width="864" height="921" alt="pawpal2" src="https://github.com/user-attachments/assets/ade54466-6ea4-493f-8355-1ab1adc31b2d" />
+<img width="962" height="945" alt="pawpal3" src="https://github.com/user-attachments/assets/173bd894-cf5e-4955-af22-2e41b519731e" />
+
+<img width="1070" height="743" alt="umldesign" src="https://github.com/user-attachments/assets/f368b102-c9af-4216-92a7-6034270f523b" />
+
+
 ## 1. System Design
 
 **a. Initial design**
