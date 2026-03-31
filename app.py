@@ -117,14 +117,21 @@ else:
             else:
                 st.error("Please enter a task name.")
 
-    # Show tasks per pet
+    # Show tasks per pet, sorted chronologically
+    scheduler_preview = owner.get_schedule()
     for pet in pets:
-        pet_tasks = pet.get_tasks()
+        pet_tasks = scheduler_preview.sort_by_time(pet.get_tasks())
         if pet_tasks:
             st.markdown(f"**{pet.name}'s tasks:**")
             st.table([
-                {"Task": t.task_name, "Time": t.time_slot.strftime("%I:%M %p"),
-                 "Duration": f"{t.duration_minutes()} min", "Priority": t.priority.value}
+                {
+                    "Task": t.task_name,
+                    "Time": t.time_slot.strftime("%I:%M %p"),
+                    "Duration": f"{t.duration_minutes()} min",
+                    "Priority": t.priority.value,
+                    "Repeats": t.recurrence.value,
+                    "Status": "Done" if t.is_complete() else "Pending",
+                }
                 for t in pet_tasks
             ])
 
@@ -140,25 +147,40 @@ if st.button("Generate schedule"):
         scheduler.build_schedule()
 
         # Warn about any overlapping tasks before showing the plan
-        for task_a, task_b in scheduler.get_conflicts():
-            pet_a = task_a.pet.name if task_a.pet else "Unknown"
-            pet_b = task_b.pet.name if task_b.pet else "Unknown"
-            st.warning(
-                f"Conflict: '{task_a.task_name}' ({pet_a}, {task_a.time_slot.strftime('%I:%M %p')}) "
-                f"overlaps with '{task_b.task_name}' ({pet_b}, {task_b.time_slot.strftime('%I:%M %p')})"
-            )
+        conflicts = scheduler.get_conflicts()
+        if conflicts:
+            st.error(f"⚠️ {len(conflicts)} scheduling conflict(s) found — only the higher-priority task was kept in the plan.")
+            for task_a, task_b in conflicts:
+                pet_a = task_a.pet.name if task_a.pet else "Unknown"
+                pet_b = task_b.pet.name if task_b.pet else "Unknown"
+                st.warning(
+                    f"**'{task_a.task_name}'** ({pet_a}) runs {task_a.time_slot.strftime('%I:%M %p')} – "
+                    f"{(task_a.time_slot.replace(hour=(task_a.time_slot.hour + task_a.duration_minutes() // 60) % 24, minute=(task_a.time_slot.minute + task_a.duration_minutes()) % 60)).strftime('%I:%M %p')}"
+                    f" · overlaps with **'{task_b.task_name}'** ({pet_b}) at {task_b.time_slot.strftime('%I:%M %p')}. "
+                    f"Fix: reschedule one of these tasks to a different time."
+                )
 
         plan = scheduler.get_daily_plan()
         if not plan:
             st.info("No tasks to schedule. Make sure your pets have tasks added.")
         else:
-            st.success(f"Scheduled {len(plan)} task(s) for today.")
-            for task in plan:
-                pet_label = task.pet.name if task.pet else "Unknown"
-                st.markdown(
-                    f"**{task.time_slot.strftime('%I:%M %p')}** — "
-                    f"{task.task_name} for **{pet_label}** "
-                    f"({task.priority.value} priority, {task.duration_minutes()} min)"
-                )
-                if task.description:
-                    st.caption(task.description)
+            pending = scheduler.get_pending_tasks()
+            completed = scheduler.get_completed_tasks()
+            col1, col2, col3 = st.columns(3)
+            col1.metric("Total scheduled", len(plan))
+            col2.metric("Pending", len(pending))
+            col3.metric("Completed", len(completed))
+
+            st.markdown("#### Today's Plan")
+            st.table([
+                {
+                    "Time": t.time_slot.strftime("%I:%M %p"),
+                    "Task": t.task_name,
+                    "Pet": t.pet.name if t.pet else "—",
+                    "Priority": t.priority.value,
+                    "Duration": f"{t.duration_minutes()} min",
+                    "Repeats": t.recurrence.value,
+                    "Notes": t.description or "—",
+                }
+                for t in plan
+            ])
