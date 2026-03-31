@@ -38,6 +38,33 @@ Tasks can repeat `Daily` or `Weekly`. When `mark_task_complete()` is called on a
 **Chronological output**
 `sort_by_time()` uses Python's `sorted()` with a `lambda` key on `time_slot` to return the final plan in clock order, regardless of the priority order used internally during scheduling.
 
+## Testing PawPal+
+
+### Run the tests
+
+```bash
+python -m pytest tests/test_pawpal.py -v
+```
+
+### What the tests cover
+
+| Area | Tests |
+|---|---|
+| **Sorting** | Tasks added out of order are returned chronologically by `get_daily_plan()` |
+| **Recurrence — Daily** | Completing a daily task spawns a new task scheduled for the next day |
+| **Recurrence — Weekly** | Completing a weekly task on its only day schedules it exactly 7 days later |
+| **Recurrence — None** | Completing a one-off task returns `None` and spawns nothing |
+| **Conflict detection** | Overlapping tasks and exact same-time tasks are both flagged by `get_conflicts()` |
+| **Priority resolution** | When two tasks conflict, the higher-priority task wins the slot |
+| **Edge cases** | Pet with no tasks, owner with no pets, and weekly task with no days configured all return safely without crashing |
+| **Recurrence gate** | Daily, weekly, and date-specific tasks are correctly included or excluded based on the schedule date |
+
+### Confidence level
+
+⭐⭐⭐⭐ 4/5
+
+All 13 tests pass. Core behaviors — scheduling, conflict detection, sorting, and recurrence — are verified. One star held back because `available_times` filtering and midnight-spanning tasks have not been tested yet, and the test suite does not cover the Streamlit UI layer directly.
+
 ## Getting started
 
 ### Setup
